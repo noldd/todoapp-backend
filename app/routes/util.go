@@ -16,3 +16,7 @@ func respondJSON(w http.ResponseWriter, status int, payload interface{}) {
 	w.WriteHeader(status)
 	w.Write([]byte(response))
 }
+
+func respondError(w http.ResponseWriter, status int, message string) {
+	respondJSON(w, status, map[string]string{"error": message})
+}
