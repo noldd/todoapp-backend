@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"todoapp-backend/app/model"
+	"todoapp-backend/app/routes"
 	"todoapp-backend/config"
 
 	"github.com/go-chi/chi/v5"
@@ -35,8 +37,15 @@ func NewApp(config *config.Config) *App {
 		log.Fatal("Could not connect to database")
 	}
 
+	model.DBMigrate(db)
+
+	r := chi.NewRouter()
+
+	tasks := routes.NewTasksRouter(db)
+	r.Route("/tasks", tasks.Router)
+
 	return &App{
-		Router: chi.NewRouter(),
+		Router: r,
 		DB:     db,
 	}
 }
