@@ -3,6 +3,8 @@ package config
 import (
 	"log"
 	"os"
+
+	_ "github.com/joho/godotenv/autoload"
 )
 
 type Config struct {
