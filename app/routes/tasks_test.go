@@ -2,7 +2,6 @@ package routes
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -86,6 +85,10 @@ func TestTasks_List(t *testing.T) {
 }
 
 func TestTasks_PostIntegration(t *testing.T) {
+    if testing.Short() {
+        t.Skip("Skipping integration test")
+    }
+
     testutil.SetEnv()
     db := db.GetDB(config.GetConfig())
 
@@ -98,6 +101,11 @@ func TestTasks_PostIntegration(t *testing.T) {
         {
             name: "OK",
             bodyJson: map[string]interface{}{"Title": "foo", "Done": false},
+            wantStatus: 201,
+        },
+        {
+            name: "OK",
+            bodyJson: map[string]interface{}{"Title": "bar", "Done": true},
             wantStatus: 201,
         },
         {
@@ -114,17 +122,11 @@ func TestTasks_PostIntegration(t *testing.T) {
 
             w := httptest.NewRecorder()
 
-            // Get request body from bodyText if set, else get from bodyJson
-            var reader io.Reader
-            if tt.bodyText != "" {
-                reader = strings.NewReader(tt.bodyText)
-            } else {
-                bytes, err := json.Marshal(tt.bodyJson)
-                if err != nil {
-                    t.Fatalf("Failed to marshal JSON: %v", err)
-                }
-                reader = strings.NewReader(string(bytes))
+            bytes, err := json.Marshal(tt.bodyJson)
+            if err != nil {
+                t.Fatalf("Failed to marshal JSON: %v", err)
             }
+            reader := strings.NewReader(string(bytes))
 
             r := httptest.NewRequest(
                 http.MethodPost,
