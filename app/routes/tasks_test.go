@@ -92,7 +92,6 @@ func TestTasks_ListIntegration(t *testing.T) {
         t.Skip("Skipping integration test")
     }
 
-    testutil.SetEnv()
     db := db.GetDB(config.GetConfig())
 
 	tests := []struct {
@@ -124,6 +123,25 @@ func TestTasks_ListIntegration(t *testing.T) {
             if gotStatus := w.Result().StatusCode; gotStatus != tt.wantStatus {
                 t.Fatalf("Got %d, want %d", gotStatus, tt.wantStatus)
             }
+
+            // Make sure that the initial test data is found in the response
+            var tasks []model.Task
+            decoder := json.NewDecoder(w.Result().Body)
+            if err := decoder.Decode(&tasks); err != nil {
+                t.Fatalf("Error decoding response: %v", err)
+            }
+
+            found := false
+            for _, task := range tasks {
+                if task.Title == "Foo" && task.Done == true {
+                    found = true
+                    break
+                }
+            }
+
+            if found == false {
+                t.Error("Couldn't find a done Foo task in results")
+            }
 		})
 	}
 }
@@ -134,7 +152,6 @@ func TestTasks_PostIntegration(t *testing.T) {
         t.Skip("Skipping integration test")
     }
 
-    testutil.SetEnv()
     db := db.GetDB(config.GetConfig())
 
 	tests := []struct {
@@ -196,7 +213,7 @@ func TestTasks_PostIntegration(t *testing.T) {
 
             body, readErr := ioutil.ReadAll(resp.Body)
             if readErr != nil {
-                t.Fatalf("Failed to read response body: %v", err)
+                t.Fatalf("Failed to read response body: %v", readErr)
             }
 
             var task model.Task
@@ -216,4 +233,8 @@ func TestTasks_PostIntegration(t *testing.T) {
             }
 		})
 	}
+}
+
+func init() {
+    testutil.SetupDB()
 }
