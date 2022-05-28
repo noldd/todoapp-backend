@@ -23,4 +23,4 @@ test:
 	go test ./...
 
 test.integration: start-containers
-	go test ./integration
+	go test ./integration -count=1
