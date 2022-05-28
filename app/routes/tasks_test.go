@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"strings"
 	"testing"
 	"todoapp-backend/app/model"
@@ -14,78 +13,8 @@ import (
 	"todoapp-backend/db"
 	"todoapp-backend/testutil"
 
-	"github.com/go-chi/chi/v5"
 	"gorm.io/gorm"
 )
-
-func TestTasks_Router(t *testing.T) {
-	type fields struct {
-		DB *gorm.DB
-	}
-	type args struct {
-		r chi.Router
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			tr := &Tasks{
-				DB: tt.fields.DB,
-			}
-			tr.Router(tt.args.r)
-		})
-	}
-}
-
-func TestNewTasksRouter(t *testing.T) {
-	type args struct {
-		db *gorm.DB
-	}
-	tests := []struct {
-		name string
-		args args
-		want *Tasks
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewTasksRouter(tt.args.db); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewTasksRouter() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestTasks_List(t *testing.T) {
-	type fields struct {
-		DB *gorm.DB
-	}
-	type args struct {
-		w http.ResponseWriter
-		r *http.Request
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			tr := &Tasks{
-				DB: tt.fields.DB,
-			}
-			tr.List(tt.args.w, tt.args.r)
-		})
-	}
-}
 
 func TestTasks_ListIntegration(t *testing.T) {
     if testing.Short() {
