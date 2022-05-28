@@ -6,12 +6,14 @@ import (
 	"errors"
 	"net/http"
 	"os"
+	"strconv"
 	"testing"
 	"todoapp-backend/app"
 	"todoapp-backend/app/model"
 	"todoapp-backend/config"
 	"todoapp-backend/db"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 )
@@ -32,7 +34,7 @@ func TestTasksList(t *testing.T) {
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
             // Create random task for sanity check
-            sanityTask := randomTask(DB)
+            sanityTask := randomExistingTask(DB)
 
             resp, err := http.Get(url)
             if err != nil {
@@ -62,6 +64,59 @@ func TestTasksList(t *testing.T) {
 
             if found == false {
                 t.Fatalf("Couldn't find sanity check task in results")
+            }
+        })
+    }
+}
+
+func TestTasksGet(t *testing.T) {
+    url := Config.Addr + "/tasks/"
+
+    tests := []struct {
+        name string
+        wantStatus int
+    }{
+        {
+            name: "OK",
+            wantStatus: http.StatusOK,
+        },
+        {
+            name: "NotFound",
+            wantStatus: http.StatusNotFound,
+        },
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            // Create random task for check
+            var testTask *model.Task
+            if tt.wantStatus == http.StatusOK {
+                testTask = randomExistingTask(DB)
+            } else {
+                testTask = randomNonExistingTask(DB)
+            }
+
+            resp, err := http.Get(url + strconv.Itoa(int(testTask.ID)))
+            if err != nil {
+                t.Fatal(err)
+            }
+
+            if resp.StatusCode != tt.wantStatus {
+                t.Fatalf("Wrong http status. Got: %d. Want: %d", resp.StatusCode, tt.wantStatus)
+            }
+
+            if tt.wantStatus != http.StatusOK {
+                return
+            }
+
+            // Make sure that the response contains the correct task
+            gotTask := model.Task{}
+            if err := json.NewDecoder(resp.Body).Decode(&gotTask); err != nil {
+                t.Fatalf("Failed to decode response: %v", err)
+            }
+
+            if cmp.Equal(&gotTask, testTask) == false {
+                t.Fatalf("gotTask and testTask aren't equal. gotTask: %v, testTask: %v", gotTask, testTask)
             }
         })
     }
@@ -111,7 +166,7 @@ func TestTasksPost(t *testing.T) {
             createdTask := model.Task{}
             if err := DB.Where(tt.body).First(&createdTask).Error; err != nil {
                 if errors.Is(err, gorm.ErrRecordNotFound) {
-                    t.Fatal("Couldn't find created task in DB")
+                    t.Fatal("Couldn't find sanity check task in DB")
                 }
                 t.Fatalf("Unexpected DB error: %v", err)
             }
