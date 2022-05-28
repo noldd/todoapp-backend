@@ -14,6 +14,7 @@ import (
 type App struct {
 	Router *chi.Mux
 	DB     *gorm.DB
+    Config *config.Config
 }
 
 func NewApp(config *config.Config) *App {
@@ -26,10 +27,11 @@ func NewApp(config *config.Config) *App {
 	return &App{
 		Router: r,
 		DB:     db,
+        Config: config,
 	}
 }
 
-func (a *App) Run(host string) {
-	log.Printf("Serving on http://localhost%s", host)
-	log.Fatal(http.ListenAndServe(host, a.Router))
+func (a *App) Run() {
+    log.Printf("Serving on %s", a.Config.Addr)
+    log.Fatal(http.ListenAndServe(":" + a.Config.Port, a.Router))
 }

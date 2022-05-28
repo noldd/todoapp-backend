@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -10,6 +11,7 @@ import (
 type Config struct {
 	DB   *DBConfig
 	Port string
+    Addr string
 }
 
 type DBConfig struct {
@@ -58,6 +60,8 @@ func GetConfig() *Config {
 	if port := os.Getenv("PORT"); port != "" {
 		config.Port = port
 	}
+
+    config.Addr = fmt.Sprintf("http://localhost:%s", config.Port)
 
 	return config
 }

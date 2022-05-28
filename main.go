@@ -8,5 +8,5 @@ import (
 func main() {
 	config := config.GetConfig()
 	app := app.NewApp(config)
-	app.Run(":" + config.Port)
+	app.Run()
 }

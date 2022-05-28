@@ -20,7 +20,7 @@ wait-for-db:
 	docker run --rm --network '$(dirname)_default' busybox /bin/sh -c "until nc -z db 3306; do sleep 3; echo 'Waiting for DB to be available...'; done"
 
 test:
-	go test ./... -short
+	go test ./...
 
 test.integration: start-containers
-	go test ./...
+	go test ./integration
