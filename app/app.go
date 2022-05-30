@@ -3,7 +3,7 @@ package app
 import (
 	"log"
 	"net/http"
-	"todoapp-backend/app/routes"
+	"todoapp-backend/app/controller"
 	"todoapp-backend/config"
 	"todoapp-backend/db"
 
@@ -21,7 +21,7 @@ func NewApp(config *config.Config) *App {
 	db := db.GetDB(config)
 	r := chi.NewRouter()
 
-	tasks := routes.NewTasksRouter(db)
+	tasks := controller.NewTasksController(db)
 	r.Route("/tasks", tasks.Router)
 
 	return &App{

@@ -1,4 +1,4 @@
-package routes
+package controller
 
 import (
 	"errors"
@@ -20,7 +20,7 @@ func (t *Tasks) Router(r chi.Router) {
 	r.Post("/", t.Post)
 }
 
-func NewTasksRouter(db *gorm.DB) *Tasks {
+func NewTasksController(db *gorm.DB) *Tasks {
 	return &Tasks{db}
 }
 
