@@ -32,20 +32,20 @@ func (t *Tasks) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (t *Tasks) Get(w http.ResponseWriter, r *http.Request) {
-    task := model.Task{}
-    if err := t.DB.First(&task, chi.URLParam(r, "id")).Error; err != nil {
-        switch {
-        case errors.Is(err, gorm.ErrRecordNotFound):
-            respondError(w, http.StatusNotFound, "Task not found")
-            return
-        default:
-            respondError(w, http.StatusInternalServerError, "Internal server error")
-            log.Fatalf("Error while getting task %v: %c", task.ID, err)
-            return
-        }
-    }
+	task := model.Task{}
+	if err := t.DB.First(&task, chi.URLParam(r, "id")).Error; err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			respondError(w, http.StatusNotFound, "Task not found")
+			return
+		default:
+			respondError(w, http.StatusInternalServerError, "Internal server error")
+			log.Fatalf("Error while getting task %v: %c", task.ID, err)
+			return
+		}
+	}
 
-    respondJSON(w, http.StatusOK, task)
+	respondJSON(w, http.StatusOK, task)
 }
 
 func (t *Tasks) Post(w http.ResponseWriter, r *http.Request) {

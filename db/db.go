@@ -31,5 +31,5 @@ func GetDB(config *config.Config) *gorm.DB {
 	}
 
 	model.DBMigrate(db)
-    return db
+	return db
 }

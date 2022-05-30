@@ -11,7 +11,7 @@ import (
 type Config struct {
 	DB   *DBConfig
 	Port string
-    Addr string
+	Addr string
 }
 
 type DBConfig struct {
@@ -61,7 +61,7 @@ func GetConfig() *Config {
 		config.Port = port
 	}
 
-    config.Addr = fmt.Sprintf("http://localhost:%s", config.Port)
+	config.Addr = fmt.Sprintf("http://localhost:%s", config.Port)
 
 	return config
 }
