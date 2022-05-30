@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
@@ -50,14 +49,9 @@ func (t *Tasks) Get(w http.ResponseWriter, r *http.Request) {
 
 func (t *Tasks) Post(w http.ResponseWriter, r *http.Request) {
 	var task model.Task
-
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&task); err != nil {
+	if err := parseJSON(r.Body, &task); err != nil {
 		respondError(w, http.StatusBadRequest, err.Error())
-		log.Printf("Failed to decode JSON: %s", err.Error())
-		return
 	}
-	defer r.Body.Close()
 
 	if err := t.DB.Save(&task).Error; err != nil {
 		respondError(w, http.StatusInternalServerError, "Internal server error")

@@ -2,8 +2,18 @@ package routes
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 )
+
+// TODO: Error message that can be sent to the client
+func parseJSON(r io.ReadCloser, target interface{}) error {
+	decoder := json.NewDecoder(r)
+	if err := decoder.Decode(target); err != nil {
+		return err
+	}
+	return nil
+}
 
 func respondJSON(w http.ResponseWriter, status int, payload interface{}) {
 	response, err := json.Marshal(payload)
