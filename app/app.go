@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"todoapp-backend/app/controller"
+	"todoapp-backend/app/repository"
 	"todoapp-backend/config"
 	"todoapp-backend/db"
 
@@ -21,8 +22,9 @@ func NewApp(config *config.Config) *App {
 	db := db.GetDB(config)
 	r := chi.NewRouter()
 
-	tasks := controller.NewTasksController(db)
-	r.Route("/tasks", tasks.Router)
+	tasksRep := repository.NewTasks(db)
+	tasksCtl := controller.NewTasksController(tasksRep)
+	r.Route("/tasks", tasksCtl.Router)
 
 	return &App{
 		Router: r,

@@ -5,13 +5,14 @@ import (
 	"log"
 	"net/http"
 	"todoapp-backend/app/model"
+	"todoapp-backend/app/repository"
 
 	"github.com/go-chi/chi/v5"
 	"gorm.io/gorm"
 )
 
 type Tasks struct {
-	DB *gorm.DB
+	Repository *repository.Tasks
 }
 
 func (t *Tasks) Router(r chi.Router) {
@@ -20,19 +21,24 @@ func (t *Tasks) Router(r chi.Router) {
 	r.Post("/", t.Post)
 }
 
-func NewTasksController(db *gorm.DB) *Tasks {
-	return &Tasks{db}
+func NewTasksController(repository *repository.Tasks) *Tasks {
+	return &Tasks{repository}
 }
 
 func (t *Tasks) List(w http.ResponseWriter, r *http.Request) {
-	tasks := []model.Task{}
-	t.DB.Find(&tasks)
+	tasks := t.Repository.List()
 	respondJSON(w, http.StatusOK, tasks)
 }
 
 func (t *Tasks) Get(w http.ResponseWriter, r *http.Request) {
-	task := model.Task{}
-	if err := t.DB.First(&task, chi.URLParam(r, "id")).Error; err != nil {
+	id, err := parseID(chi.URLParam(r, "id"))
+	if err != nil {
+		// TODO: Better response?
+		respondError(w, http.StatusBadRequest, "Bad request")
+	}
+
+	task, err := t.Repository.GetById(id)
+	if err != nil {
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):
 			respondError(w, http.StatusNotFound, "Task not found")
@@ -53,7 +59,9 @@ func (t *Tasks) Post(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusBadRequest, err.Error())
 	}
 
-	if err := t.DB.Save(&task).Error; err != nil {
+	task, err := t.Repository.Create(task)
+
+	if err != nil {
 		respondError(w, http.StatusInternalServerError, "Internal server error")
 		log.Printf("Failed to save post to DB: %s", err.Error())
 		return
