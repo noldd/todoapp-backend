@@ -17,6 +17,10 @@ func (e controllerError) Error() string {
 	return e.message
 }
 
+func newErrEmailInUse() controllerError {
+	return controllerError{http.StatusConflict, "Email already in use"}
+}
+
 func wrapError(err error) error {
 	switch {
 	default:
