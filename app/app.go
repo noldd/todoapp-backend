@@ -22,9 +22,7 @@ func NewApp(config *config.Config) *App {
 	db := db.GetDB(config)
 	r := chi.NewRouter()
 
-	tasksRep := repository.NewTasks(db)
-	tasksCtl := controller.NewTasksController(tasksRep)
-	r.Route("/tasks", tasksCtl.Router)
+	r.Route("/tasks", controller.NewTasksController(repository.NewTasks(db)).Router)
 
 	return &App{
 		Router: r,

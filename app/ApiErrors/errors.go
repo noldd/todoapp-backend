@@ -39,7 +39,7 @@ func WrapError(err error, sentinel *sentinelAPIError) error {
 }
 
 var (
-	ErrNotFound  = &sentinelAPIError{http.StatusNotFound, "Not found"}
-	ErrInternal  = &sentinelAPIError{http.StatusInternalServerError, "Internal server error"}
+	ErrNotFound   = &sentinelAPIError{http.StatusNotFound, "Not found"}
+	ErrInternal   = &sentinelAPIError{http.StatusInternalServerError, "Internal server error"}
 	ErrBadRequest = &sentinelAPIError{http.StatusBadRequest, "Bad request"}
 )
