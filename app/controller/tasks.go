@@ -18,7 +18,7 @@ func (t *Tasks) Router(r chi.Router) {
 	r.Post("/", t.Post)
 }
 
-func NewTasksController(repository *repository.Tasks) *Tasks {
+func NewTasks(repository *repository.Tasks) *Tasks {
 	return &Tasks{repository}
 }
 
