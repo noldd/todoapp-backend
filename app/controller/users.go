@@ -15,11 +15,11 @@ func NewUsers(repository *repository.Users) *Users {
 	return &Users{repository}
 }
 
-func (u *Users) Router(r chi.Router) {
-	r.Get("/", u.List)
+func (c *Users) Router(r chi.Router) {
+	r.Get("/", c.List)
 }
 
-func (u *Users) List(w http.ResponseWriter, r *http.Request) {
-	users := u.Repository.List()
+func (c *Users) List(w http.ResponseWriter, r *http.Request) {
+	users := c.Repository.List()
 	respondJSON(w, http.StatusOK, users)
 }

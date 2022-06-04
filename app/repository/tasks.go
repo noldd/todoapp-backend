@@ -14,16 +14,16 @@ func NewTasks(db *gorm.DB) *Tasks {
 	return &Tasks{db}
 }
 
-func (t *Tasks) List() []model.Task {
+func (r *Tasks) List() []model.Task {
 	tasks := []model.Task{}
-	t.DB.Find(&tasks)
+	r.DB.Find(&tasks)
 	return tasks
 }
 
-func (t *Tasks) GetById(id uint) (model.Task, error) {
+func (r *Tasks) GetById(id uint) (model.Task, error) {
 	task := model.Task{}
 
-	err := wrapError(t.DB.First(&task, id).Error)
+	err := wrapError(r.DB.First(&task, id).Error)
 	if err != nil {
 		return task, err
 	}
@@ -31,8 +31,8 @@ func (t *Tasks) GetById(id uint) (model.Task, error) {
 	return task, nil
 }
 
-func (t *Tasks) Create(task model.Task) (model.Task, error) {
-	err := wrapError(t.DB.Save(&task).Error)
+func (r *Tasks) Create(task model.Task) (model.Task, error) {
+	err := wrapError(r.DB.Save(&task).Error)
 	if err != nil {
 		return task, err
 	}

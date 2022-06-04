@@ -14,8 +14,8 @@ func NewUsers(db *gorm.DB) *Users {
 	return &Users{db}
 }
 
-func (u *Users) List() []model.User {
+func (r *Users) List() []model.User {
 	users := []model.User{}
-	u.DB.Find(&users)
+	r.DB.Find(&users)
 	return users
 }
