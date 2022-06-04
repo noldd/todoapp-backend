@@ -74,6 +74,7 @@ func TestTasksGet(t *testing.T) {
 
 	tests := []struct {
 		name       string
+		id         string
 		wantStatus int
 	}{
 		{
@@ -84,19 +85,30 @@ func TestTasksGet(t *testing.T) {
 			name:       "NotFound",
 			wantStatus: http.StatusNotFound,
 		},
+		{
+			name:       "Overflow",
+			id: "100000000000000000000",
+			wantStatus: http.StatusInternalServerError,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Create random task for check
+			// Create random task if ID wasnt specified
 			var testTask *model.Task
-			if tt.wantStatus == http.StatusOK {
-				testTask = randomExistingTask(DB)
+			var id string
+			if tt.id == "" {
+				if tt.wantStatus == http.StatusOK {
+					testTask = randomExistingTask(DB)
+				} else {
+					testTask = randomNonExistingTask(DB)
+				}
+				id = strconv.Itoa(int(testTask.ID))
 			} else {
-				testTask = randomNonExistingTask(DB)
+				id = tt.id
 			}
 
-			resp, err := http.Get(url + strconv.Itoa(int(testTask.ID)))
+			resp, err := http.Get(url + id)
 			if err != nil {
 				t.Fatal(err)
 			}
