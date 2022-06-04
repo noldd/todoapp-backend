@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 	"todoapp-backend/app/ApiErrors"
@@ -37,17 +38,17 @@ func respondError(w http.ResponseWriter, err error) {
 		return
 	}
 
-	// Default to internal server error
+	// Default to internal server error. We want to know if this happens.
 	status, message := ApiErrors.ErrInternal.APIError()
 	respondJSON(w, status, map[string]string{"error": message})
+	log.Printf("Internal server error: %s", err.Error())
 }
 
-// TODO: Return better error?
 func parseID(in string) (uint, error) {
 	outU64, err := strconv.ParseUint(in, 10, 32)
 
 	if err != nil {
-		return uint(outU64), nil
+		return uint(outU64), err
 	}
 
 	return uint(outU64), nil
