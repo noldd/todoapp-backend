@@ -6,7 +6,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// TODO: Error handling for all methods
 type Tasks struct {
 	DB *gorm.DB
 }
@@ -24,7 +23,7 @@ func (t *Tasks) List() []model.Task {
 func (t *Tasks) GetById(id uint) (model.Task, error) {
 	task := model.Task{}
 
-	err := t.DB.First(&task, id).Error
+	err := wrapError(t.DB.First(&task, id).Error)
 	if err != nil {
 		return task, err
 	}
@@ -33,8 +32,7 @@ func (t *Tasks) GetById(id uint) (model.Task, error) {
 }
 
 func (t *Tasks) Create(task model.Task) (model.Task, error) {
-	err := t.DB.Save(&task).Error
-
+	err := wrapError(t.DB.Save(&task).Error)
 	if err != nil {
 		return task, err
 	}

@@ -2,16 +2,17 @@ package controller
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
+	"todoapp-backend/app/ApiErrors"
 )
 
-// TODO: Error message that can be sent to the client
 func parseJSON(r io.ReadCloser, target interface{}) error {
 	decoder := json.NewDecoder(r)
 	if err := decoder.Decode(target); err != nil {
-		return err
+		return JSONParseError
 	}
 	return nil
 }
@@ -28,7 +29,16 @@ func respondJSON(w http.ResponseWriter, status int, payload interface{}) {
 	w.Write([]byte(response))
 }
 
-func respondError(w http.ResponseWriter, status int, message string) {
+func respondError(w http.ResponseWriter, err error) {
+	var apiErr ApiErrors.APIError
+	if errors.As(err, &apiErr) {
+		status, message := apiErr.APIError()
+		respondJSON(w, status, map[string]string{"error": message})
+		return
+	}
+
+	// Default to internal server error
+	status, message := ApiErrors.ErrInternal.APIError()
 	respondJSON(w, status, map[string]string{"error": message})
 }
 
