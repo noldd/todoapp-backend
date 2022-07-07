@@ -22,7 +22,7 @@ func (c *Tasks) Router(r chi.Router) {
 	r.Post("/", c.Post)
 }
 
-func (c *Tasks) List(w http.ResponseWriter, r *http.Request) {
+func (c *Tasks) List(w http.ResponseWriter, _ *http.Request) {
 	tasks := c.Repository.List()
 	respondJSON(w, http.StatusOK, tasks)
 }
